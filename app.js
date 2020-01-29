@@ -19,13 +19,6 @@ var { evaluate } = require('./module.js');
 
 nconf.env().argv();
 
-// B A S I C 	C O N F I G
-var http_port = 3000;		// Start with Sudo for starting in  port 80 or 443
-var https_port = 443;
-var ssl_path= 'cert/ssl.key';
-var cert_file = 'cert/abc.cer';
-
-
 app.set('views', __dirname + '/views');
 app.engine('html', cons.handlebars);
 app.set('view engine', 'html');
@@ -45,24 +38,6 @@ app.use('/src', express.static(__dirname + '/src'));
 app.use('/screenshots', express.static(__dirname + '/screenshots'));
 app.use('/Auditor',express.static(path.join(__dirname, 'src/HTML_CodeSniffer/Auditor')));
 app.use('/Images',express.static(path.join(__dirname, 'src/HTML_CodeSniffer/Auditor/Images')));
-
-
-if (fs.existsSync(ssl_path)) {
-		var hskey = fs.readFileSync(ssl_path);
-		var hscert = fs.readFileSync(cert_file) ;
-		var options = {
-		    key: hskey,
-		    cert: hscert
-		};
-		var httpsServer = https.createServer(options, app);
-		httpsServer.listen(https_port);
-		log('Express started on port ' , https_port);
-
-} else {
-		var server = http.createServer(app);
-		app.listen(http_port);
-		log('Express started on port ', http_port);
-}
 
 	app.get('/', function(req, res) {
 		res.render('index.html',{data:''});
@@ -211,4 +186,8 @@ if (fs.existsSync(ssl_path)) {
 			res.end();
 			log(stdout);
 		});
+	});
+
+	var server = app.listen(3000, function () {
+	    console.log("Listening on port %s...", server.address().port);
 	});
